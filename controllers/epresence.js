@@ -82,6 +82,7 @@ exports.getEpresences = async (req, res) => {
           attributes: ["name"],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
 
     const groupedRecords = {};
@@ -140,7 +141,66 @@ exports.getUserEpresences = async (req, res) => {
     const userSupervisor = req.user?.npp_supervisor;
     const nppSupervisor = req.user?.npp;
 
-    console.log("userSupervisor", userSupervisor);
+    if (!userId || (userSupervisor !== "" && userSupervisor !== null)) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        error: "You don't have permission. This require Supervisor role.",
+      });
+    }
+
+    const epresences = await Epresence.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["name", "npp_supervisor"],
+          where: {
+            npp_supervisor: nppSupervisor,
+          },
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    const response = [];
+
+    epresences.forEach((epresence) => {
+      const date = moment(epresence.time).format("YYYY-MM-DD");
+      const time = moment(epresence.time).format("HH:mm:ss");
+      const status =
+        epresence.isApprove === "TRUE"
+          ? "APPROVE"
+          : epresence.isApprove === "FALSE"
+          ? "REJECT"
+          : "WAITING";
+
+      response.push({
+        nppSupervisor: epresence.User.npp_supervisor,
+        id: epresence.id,
+        userId: epresence.userId,
+        userName: epresence.User.name,
+        type: epresence.type,
+        date: date,
+        time: time,
+        status: status,
+      });
+    });
+
+    res.status(StatusCodes.CREATED).json({
+      message: "Success get epresence",
+      data: response,
+    });
+  } catch (error) {
+    logger.error("epresence/getEpresences error: " + error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.getUserEpresencesGroup = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const userSupervisor = req.user?.npp_supervisor;
+    const nppSupervisor = req.user?.npp;
 
     if (!userId || (userSupervisor !== "" && userSupervisor !== null)) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -158,6 +218,7 @@ exports.getUserEpresences = async (req, res) => {
           },
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
 
     const groupedRecords = {};
@@ -206,6 +267,60 @@ exports.getUserEpresences = async (req, res) => {
     res.status(StatusCodes.CREATED).json({
       message: "Success get epresence",
       data: Object.values(groupedRecords),
+    });
+  } catch (error) {
+    logger.error("epresence/getEpresences error: " + error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.updateApproveStatus = async (req, res) => {
+  try {
+    const { error } = await epresence_function.validateApproveEpresence(
+      req.body
+    );
+    if (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: error.details[0].message,
+      });
+    }
+
+    const userId = req.user?.id;
+    const userSupervisor = req.user?.npp_supervisor;
+    const { id } = req.params;
+    const { isApprove } = req.body;
+
+    if (!userId || (userSupervisor !== "" && userSupervisor !== null)) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        error: "You don't have permission. This require Supervisor role.",
+      });
+    }
+
+    if (!id) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: "epresence id param is required.",
+      });
+    }
+
+    const epresence = await Epresence.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!epresence) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        error: `epresence with id ${id} not found.`,
+      });
+    }
+
+    epresence.isApprove = isApprove;
+    await epresence.save();
+
+    return res.status(StatusCodes.OK).json({
+      message: `Epresence approval status updated to ${isApprove}.`,
     });
   } catch (error) {
     logger.error("epresence/getEpresences error: " + error);

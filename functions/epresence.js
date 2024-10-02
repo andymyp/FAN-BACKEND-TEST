@@ -8,3 +8,11 @@ exports.validateEpresence = async (request) => {
 
   return schema.validate(request);
 };
+
+exports.validateApproveEpresence = async (request) => {
+  const schema = Joi.object({
+    isApprove: Joi.string().valid("TRUE", "FALSE").required(),
+  });
+
+  return schema.validate(request);
+};
