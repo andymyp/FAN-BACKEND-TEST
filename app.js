@@ -27,6 +27,8 @@ app.use("/api/auth", require("./routes/auth"));
 app.use(require("./middleware/auth"));
 
 //! Protected Routes
+app.use("/api", require("./routes/epresence"));
+
 app.use("/api/test-auth", (req, res) => {
   res.status(200).json({
     message: "Authorized!",
