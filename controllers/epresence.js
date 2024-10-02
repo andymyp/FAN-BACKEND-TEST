@@ -20,7 +20,7 @@ exports.createEpresence = async (req, res) => {
 
     if (!userId || userSupervisor === "" || userSupervisor === null) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
-        error: "You don't have permission for this action.",
+        error: "You don't have permission. This require User role.",
       });
     }
 
@@ -66,6 +66,13 @@ exports.createEpresence = async (req, res) => {
 exports.getEpresences = async (req, res) => {
   try {
     const userId = req.user?.id;
+    const userSupervisor = req.user?.npp_supervisor;
+
+    if (!userId || userSupervisor === "" || userSupervisor === null) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        error: "You don't have permission. This require User role.",
+      });
+    }
 
     const epresences = await Epresence.findAll({
       where: { userId },
@@ -107,6 +114,87 @@ exports.getEpresences = async (req, res) => {
           "HH:mm:ss"
         );
         groupedRecords[date].outStatus =
+          epresence.isApprove === "TRUE"
+            ? "APPROVE"
+            : epresence.isApprove === "FALSE"
+            ? "REJECT"
+            : "WAITING";
+      }
+    });
+
+    res.status(StatusCodes.CREATED).json({
+      message: "Success get epresence",
+      data: Object.values(groupedRecords),
+    });
+  } catch (error) {
+    logger.error("epresence/getEpresences error: " + error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: error.message,
+    });
+  }
+};
+
+exports.getUserEpresences = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const userSupervisor = req.user?.npp_supervisor;
+    const nppSupervisor = req.user?.npp;
+
+    console.log("userSupervisor", userSupervisor);
+
+    if (!userId || (userSupervisor !== "" && userSupervisor !== null)) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({
+        error: "You don't have permission. This require Supervisor role.",
+      });
+    }
+
+    const epresences = await Epresence.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["name", "npp_supervisor"],
+          where: {
+            npp_supervisor: nppSupervisor,
+          },
+        },
+      ],
+    });
+
+    const groupedRecords = {};
+
+    epresences.forEach((epresence) => {
+      const nameUser = epresence.User.name;
+      const date = moment(epresence.time).format("YYYY-MM-DD");
+      const group = nameUser + date;
+
+      if (!groupedRecords[group]) {
+        groupedRecords[group] = {
+          nppSupervisor: nppSupervisor,
+          userId: epresence.userId,
+          userName: epresence.User.name,
+          date,
+          inTime: null,
+          outTime: null,
+          inStatus: null,
+          outStatus: null,
+        };
+      }
+
+      if (epresence.type === "IN") {
+        groupedRecords[group].inTime = moment(epresence.time).format(
+          "HH:mm:ss"
+        );
+        groupedRecords[group].inStatus =
+          epresence.isApprove === "TRUE"
+            ? "APPROVE"
+            : epresence.isApprove === "FALSE"
+            ? "REJECT"
+            : "WAITING";
+      } else if (epresence.type === "OUT") {
+        groupedRecords[group].outTime = moment(epresence.time).format(
+          "HH:mm:ss"
+        );
+        groupedRecords[group].outStatus =
           epresence.isApprove === "TRUE"
             ? "APPROVE"
             : epresence.isApprove === "FALSE"
