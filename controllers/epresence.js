@@ -46,16 +46,14 @@ exports.createEpresence = async (req, res) => {
       });
     }
 
-    const newEpresence = await Epresence.create({
+    await Epresence.create({
       userId: userId,
       type: type,
       time: currentDate,
-      isApprove: "FALSE",
     });
 
     res.status(StatusCodes.CREATED).json({
-      message: "Success create epresence",
-      data: newEpresence.get(),
+      message: `Success create ${type} epresence`,
     });
   } catch (error) {
     logger.error("epresence/createEpresence error: " + error);
@@ -99,13 +97,21 @@ exports.getEpresences = async (req, res) => {
       if (epresence.type === "IN") {
         groupedRecords[date].inTime = moment(epresence.time).format("HH:mm:ss");
         groupedRecords[date].inStatus =
-          epresence.isApprove === "TRUE" ? "APPROVE" : "REJECT";
+          epresence.isApprove === "TRUE"
+            ? "APPROVE"
+            : epresence.isApprove === "FALSE"
+            ? "REJECT"
+            : "WAITING";
       } else if (epresence.type === "OUT") {
         groupedRecords[date].outTime = moment(epresence.time).format(
           "HH:mm:ss"
         );
         groupedRecords[date].outStatus =
-          epresence.isApprove === "TRUE" ? "APPROVE" : "REJECT";
+          epresence.isApprove === "TRUE"
+            ? "APPROVE"
+            : epresence.isApprove === "FALSE"
+            ? "REJECT"
+            : "WAITING";
       }
     });
 

@@ -24,7 +24,7 @@ const Epresence = sequelize.define(
     },
     isApprove: {
       type: DataTypes.ENUM("TRUE", "FALSE"),
-      allowNull: false,
+      allowNull: true,
     },
     time: {
       type: DataTypes.DATE,
