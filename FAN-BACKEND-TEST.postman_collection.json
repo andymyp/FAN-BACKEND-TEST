@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "73410535-7a64-48e5-9054-bb6bca961f2c",
+		"name": "FAN-BACKEND-TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7494414"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Caca\",\r\n    \"email\": \"caca@mail.com\",\r\n    \"npp\": \"263789\",\r\n    \"npp_supervisor\": \"126453\",\r\n    \"password\": \"123123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"andy@mail.com\",\r\n    \"password\": \"123123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Auth",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/test-auth",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"test-auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get Epresences",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/epresence",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"epresence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Epresence",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"OUT\",\r\n  \"time\": \"2024-10-02 16:13:51\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/epresence",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"epresence"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Supervisor",
+			"item": [
+				{
+					"name": "Get Epresences",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/supervisor/epresence",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"supervisor",
+								"epresence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Epresences Group",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/supervisor/epresence/group",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"supervisor",
+								"epresence",
+								"group"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Epresence",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"isApprove\": \"FALSE\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/supervisor/epresence/1/approve",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"supervisor",
+								"epresence",
+								"1",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "token",
+			"type": "string"
+		}
+	]
+}
