@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 
 const sequelize = require("./config/sequelize");
+const logger = require("./config/logger");
 
 const app = express();
 
@@ -30,12 +31,12 @@ const APP_PORT = process.env.APP_PORT || 3000;
 sequelize
   .authenticate()
   .then(() => {
-    console.log("PostgreSQL connected...");
+    logger.info("PostgreSQL connected");
 
     app.listen(APP_PORT, () => {
-      console.log("App running in port:", APP_PORT);
+      logger.info("App running in port: " + APP_PORT);
     });
   })
   .catch((err) => {
-    console.error("Error connecting to the database:", err.message);
+    logger.error("Error connecting to the database:", err.message);
   });
