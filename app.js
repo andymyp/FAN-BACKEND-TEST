@@ -20,6 +20,9 @@ app.use("/status", (req, res) => {
   });
 });
 
+//! Auth Route
+app.use("/api/auth", require("./routes/auth"));
+
 //! Not Found
 app.all("*", (req, res) => {
   res.status(404).json({ message: "Endpoint was not found" });
@@ -30,8 +33,13 @@ const APP_PORT = process.env.APP_PORT || 3000;
 
 sequelize
   .authenticate()
-  .then(() => {
+  .then(async () => {
     logger.info("PostgreSQL connected");
+
+    await sequelize
+      .sync()
+      .then(() => logger.info("Database synced"))
+      .catch((err) => logger.error("Error syncing database", err.message));
 
     app.listen(APP_PORT, () => {
       logger.info("App running in port: " + APP_PORT);
