@@ -36,6 +36,18 @@ exports.register = async (req, res) => {
       });
     }
 
+    if (req.body.npp_supervisor) {
+      const existingSupervisor = await User.findOne({
+        where: { npp_supervisor: req.body.npp_supervisor },
+      });
+
+      if (!existingSupervisor) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+          error: "Supervisor not exists",
+        });
+      }
+    }
+
     const salt = bcrypt.genSaltSync();
     const password = bcrypt.hashSync(req.body.password, salt);
 
