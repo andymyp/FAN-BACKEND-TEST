@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+const sequelize = require("./config/sequelize");
+
 const app = express();
 
 //! Middlewares
@@ -25,6 +27,15 @@ app.all("*", (req, res) => {
 //! Connection
 const APP_PORT = process.env.APP_PORT || 3000;
 
-app.listen(APP_PORT, () => {
-  console.log("App running in port:", APP_PORT);
-});
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("PostgreSQL connected...");
+
+    app.listen(APP_PORT, () => {
+      console.log("App running in port:", APP_PORT);
+    });
+  })
+  .catch((err) => {
+    console.error("Error connecting to the database:", err.message);
+  });
