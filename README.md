@@ -23,6 +23,7 @@
     <li><a href="#prerequisites">Prerequisites</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#logic-test">Logic Test</a></li>
   </ol>
 </details>
 <br />
@@ -75,6 +76,24 @@ Backend RESTFUL API build with Node.js, Express.js, PostgreSQL, Sequelize, JWT, 
 
    # watch mode
    npm run dev
+   ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- USAGE EXAMPLES -->
+
+## Logic Test
+
+1. Run logic `kaos_kaki`
+
+   ```sh
+   node logic_test/kaos_kaki
+   ```
+
+2. Run logic `jumlah_kata`
+
+   ```sh
+   node logic_test/jumlah_kata
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
